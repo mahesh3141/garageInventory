@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "GarageInventoryApp",
+    "slug": "garage-inventory-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "garageinventoryapp",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#173f35",
+      "resizeMode": "contain"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow GarageInventoryApp to scan stock barcodes and QR codes."
+        }
+      ],
+      "expo-asset",
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow GarageInventoryApp to use Face ID to unlock your inventory."
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.garageinventory.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#173f35"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.garageinventory.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Scan stock barcodes and QR codes."
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
