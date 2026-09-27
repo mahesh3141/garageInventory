@@ -22,6 +22,18 @@ Cross-platform inventory management for a garage, built with Expo React Native, 
 4. Create the four inventory collections listed above and deploy `firestore.rules` with the Firebase CLI. The `inventory_history` collection is created automatically when an item is added, edited, deleted, or sold. Movement history starts after the updated rules and app are deployed; earlier changes cannot be reconstructed. Every item document uses `name`, `brand`, `quantity`, `unitPrice`, `barcode`, `createdAt`, and `updatedAt`.
 5. Run `npm install`, then `npm run web`, `npm run android`, or `npm run ios`.
 
+## CI/CD and Firebase Hosting
+
+The GitHub Actions workflow exports the Expo web app and deploys it to Firebase Hosting whenever `master` or `main` is updated. It requires Firebase Hosting to be enabled for the `garageinventoryapp` Firebase project and the GitHub Actions secret `FIREBASE_SERVICE_ACCOUNT`, containing a service-account JSON key authorized to deploy Hosting. Add it under **GitHub repository > Settings > Secrets and variables > Actions**. Never commit the service-account JSON.
+
+The first deployment publishes the site at `https://garageinventoryapp.web.app` (and the matching `firebaseapp.com` domain). Check the `Firebase Hosting` workflow run for the final URL and deployment status.
+
+## Android APK and sharing
+
+The `Android APK` workflow builds an installable APK on pushes to `master`/`main` and can also be started from **GitHub repository > Actions > Android APK > Run workflow**. It requires an `EXPO_TOKEN` Actions secret and an EAS project linked to this Expo app. Set that up once from the project folder with `npx eas-cli@latest init` and `npx eas-cli@latest build:configure`, then commit the generated EAS project ID in `app.json`. Configure the six `EXPO_PUBLIC_FIREBASE_*` variables in the Expo project's EAS `preview` environment before the first build.
+
+After the workflow succeeds, open its GitHub Actions run and download the `GarageInventoryApp-APK` artifact. Share the downloaded `.apk` file directly; recipients may need to allow installation from their browser or file manager. Alternatively, build manually with `npm run build:android` and download the APK from the EAS build page. The APK is a standalone app with the GarageInventoryApp launcher icon; it does not require Expo Go.
+
 On Android and iOS, sign in once to set a six-digit local app PIN. The PIN is stored using the operating system's encrypted secure storage. Enable fingerprint or Face ID during setup to use biometrics on later launches; the PIN remains available as a fallback. This device lock is separate from Firebase account authentication. For native builds, regenerate/rebuild the app after installing the Expo authentication and secure-storage modules.
 
 ### Firebase API key error

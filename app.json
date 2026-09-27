@@ -34,7 +34,11 @@
         "backgroundColor": "#173f35"
       },
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ]
     },
     "ios": {
@@ -45,6 +49,12 @@
     },
     "web": {
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8f1310b8-1ba3-49db-b4f2-e51dd83898fe"
+      }
+    },
+    "owner": "garageinventory"
   }
 }

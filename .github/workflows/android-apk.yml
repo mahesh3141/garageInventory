@@ -1,0 +1,56 @@
+name: Android APK
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build Android APK with EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli@latest build --platform android --profile preview --non-interactive --wait --json > eas-build.json
+
+      - name: Download built APK
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          BUILD_ID="$(node -e 'const fs=require("fs"); const value=JSON.parse(fs.readFileSync("eas-build.json", "utf8")); const builds=Array.isArray(value) ? value : (value.builds || value.build ? (value.builds || [value.build]) : [value]); const build=builds.find((entry) => entry && entry.id); if (!build) process.exit(1); process.stdout.write(build.id);')"
+          npx eas-cli@latest build:download --build-id "$BUILD_ID" --non-interactive
+          APK_PATH="$(find . -maxdepth 3 -type f -name '*.apk' -not -path './node_modules/*' -print -quit)"
+          test -n "$APK_PATH"
+          mkdir -p artifacts
+          cp "$APK_PATH" artifacts/GarageInventoryApp.apk
+
+      - name: Upload APK to workflow run
+        uses: actions/upload-artifact@v4
+        with:
+          name: GarageInventoryApp-APK
+          path: artifacts/GarageInventoryApp.apk
+          if-no-files-found: error
+          retention-days: 14
