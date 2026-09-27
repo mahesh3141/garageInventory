@@ -41,9 +41,12 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           BUILD_ID="$(node -e 'const fs=require("fs"); const value=JSON.parse(fs.readFileSync("eas-build.json", "utf8")); const builds=Array.isArray(value) ? value : (value.builds || value.build ? (value.builds || [value.build]) : [value]); const build=builds.find((entry) => entry && entry.id); if (!build) process.exit(1); process.stdout.write(build.id);')"
-          npx eas-cli@latest build:download --build-id "$BUILD_ID" --non-interactive
-          APK_PATH="$(find . -maxdepth 3 -type f -name '*.apk' -not -path './node_modules/*' -print -quit)"
-          test -n "$APK_PATH"
+          npx eas-cli@latest build:download --build-id "$BUILD_ID" --non-interactive | tee eas-download.log
+          APK_PATH="$(sed -n 's/^Build downloaded to //p' eas-download.log | tail -n 1)"
+          if [ -z "$APK_PATH" ] || [ ! -f "$APK_PATH" ]; then
+            echo "EAS did not report a downloaded APK path."
+            exit 1
+          fi
           mkdir -p artifacts
           cp "$APK_PATH" artifacts/GarageInventoryApp.apk
 
