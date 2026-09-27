@@ -25,7 +25,8 @@
         {
           "faceIDPermission": "Allow GarageInventoryApp to use Face ID to unlock your inventory."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "android": {
       "package": "com.garageinventory.app",
